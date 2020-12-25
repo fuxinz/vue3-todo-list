@@ -1,8 +1,7 @@
 <template>
   <div id="nav">
-    <todo-list list-name="My to-dos" />
+    <todo-list list-name="todo-list" />
   </div>
-  <router-view />
 </template>
 <script lang="ts">
 import TodoList from "./views/todo-list.vue";

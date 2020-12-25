@@ -4,32 +4,30 @@
       class="btn border-0 flex-grow-1 text-left shadow-none"
       :class="{ completed }"
       @click="$emit('on-toggle')"
-      v-if="!isEditing"
+      v-show="!isEditing"
     >
       <span>{{ description }}</span>
     </button>
-    <form v-else class="flex-grow-1" @submit.prevent="finishEditing()">
+    <form v-show="isEditing" class="flex-grow-1" @submit.prevent="handelEdit()">
       <input
         type="text"
         class="form-control"
         v-model="newTodoDescription"
-        @blur="finishEditing()"
+        @blur="handelEdit()"
+        ref="inputElement"
       />
     </form>
-    <button
-      @click="startEditing()"
-      class="btn btn-outline-primary border-0 ml-2"
-    >
+    <button @click="startEdit()" class="btn btn-outline-primary border-0 ml-2">
       <span class="fa fa-edit"></span>
     </button>
-    <button @click="$emit('on-delete')" class="btn btn-outline-danger border-0">
+    <button @click="handelDelete" class="btn btn-outline-danger border-0">
       <span class="fa fa-trash"></span>
     </button>
   </li>
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive } from "vue";
+import { defineComponent, ref } from "vue";
 import { AnyArray, AnyObject } from "../type";
 interface itemData {
   newTodoDescription: string;
@@ -46,24 +44,37 @@ export default defineComponent({
       default: false,
     },
   },
-  setup(props) {
-    let data: itemData = reactive({ newTodoDescription: "", isEditing: false });
-    const startEditing = () => {
-      if (data.isEditing) {
-        finishEditing();
+  setup(props, context) {
+    let newTodoDescription = ref("");
+    let isEditing = ref(false);
+    const inputElement: AnyObject = ref(null);
+
+    const startEdit = () => {
+      if (isEditing.value) {
+        handelEdit();
       } else {
-        data.newTodoDescription = props.description;
-        data.isEditing = true;
+        isEditing = true;
+        newTodoDescription.value = props.description;
+
+        inputElement.focus();
       }
     };
-    const finishEditing = () => {
-      data.isEditing = false;
-      // this.$emit("on-edit", data.newTodoDescription);
+
+    const handelEdit = () => {
+      isEditing.value = false;
+      context.emit("on-edit", newTodoDescription);
     };
+
+    const handelDelete = () => {
+      context.emit("on-delete");
+    };
+
     return {
-      ...data,
-      startEditing,
-      finishEditing,
+      newTodoDescription,
+      isEditing,
+      startEdit,
+      handelEdit,
+      handelDelete,
     };
   },
 });

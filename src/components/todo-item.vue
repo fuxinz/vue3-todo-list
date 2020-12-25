@@ -14,7 +14,7 @@
         class="form-control"
         v-model="newTodoDescription"
         @blur="handelEdit()"
-        ref="inputElement"
+        v-focus
       />
     </form>
     <button @click="startEdit()" class="btn btn-outline-primary border-0 ml-2">
@@ -44,19 +44,24 @@ export default defineComponent({
       default: false,
     },
   },
+  directives: {
+    focus: {
+      // 指令的定义
+      mounted(el) {
+        el.focus();
+      },
+    },
+  },
   setup(props, context) {
     let newTodoDescription = ref("");
     let isEditing = ref(false);
-    const inputElement: AnyObject = ref(null);
 
     const startEdit = () => {
       if (isEditing.value) {
         handelEdit();
       } else {
-        isEditing = true;
+        // isEditing = true;
         newTodoDescription.value = props.description;
-
-        inputElement.focus();
       }
     };
 

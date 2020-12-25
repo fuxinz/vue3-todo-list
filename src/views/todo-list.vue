@@ -43,7 +43,6 @@ export default defineComponent({
     listName: String,
   },
   components: { Todo },
-
   setup(props) {
     let todoObj: listData = reactive({
       todosList: [],
